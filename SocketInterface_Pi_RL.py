@@ -91,14 +91,24 @@ if __name__ == "__main__":
     # connection test
     # Establish connection
     socket_Pi = SocketInterface_Pi()
+    next_action = 1
+    next_state = 0
     
-    # PC -> Pi
-    cmd_recv = socket_Pi.subscriber_cmd()
-    print("Pi receive:",cmd_recv)
-
-    # Pi -> PC
-    state = {"a":1, "b":2}
-    print("Pi send:", state)
-    socket_Pi.publisher_env(state)
-
+    # 1. receive a cmd that indicates what's next
+    cmd = socket_Pi.subscriber_cmd()
+    if cmd["message"] is not None:
+        print(cmd["message"])
+        
+    # 2. receive action or send state
+    # action
+    if cmd["next"]==next_action:
+        cmd = socket_Pi.subscriber_cmd()
+        angle_degree = cmd["action"]
+        # hardware_interface.set_actuator_postions_radians(angle_degree)
+    
+    # state
+    if cmd["next"]==next_state:
+        imu_data = 1      # read 9-axis IMU
+        msg = {"imu_data": imu_data, "info": None}
+        socket_Pi.publisher_env( msg_state=msg )
     

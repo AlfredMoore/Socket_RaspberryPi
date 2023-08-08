@@ -75,18 +75,26 @@ if __name__ == "__main__":
     
     # Establish connection
     socket_PC = SocketInterface_PC()
-
-    t0 = time.time()
-    # PC -> Pi
-    cmd = {"a":1, "b":2}
-    print("PC send:", cmd)
-    socket_PC.publisher_cmd(cmd)
-
-    # Pi -> PC
-    env = socket_PC.subscriber_env()
-    print("PC receive:", env)
-
-    t1 = time.time()
-    # time period: 0.007 s
-    print("time period of PC -> Pi -> PC:\n", t1 - t0,"s")
+    next_action = 1
+    next_state = 0
+    action = None
+    
+    # action
+    # 1. send a cmd that indicates what's next
+    cmd = {"next":next_action, "action": None, "info": None, "message": None}
+    socket_PC.publisher_cmd( command=cmd )
+    
+    # 2. send action or receive state
+    cmd = {"next": None, "action": action, "info": None, "message": None}
+    socket_PC.publisher_cmd( command=cmd )
+    
+    
+    # # state
+    # # 1. send a cmd that indicates what's next
+    # cmd = {"next":next_state, "action": None, "info": None, "message": None}
+    # socket_PC.publisher_cmd( command=cmd )
+    
+    # # 2. send action or receive state
+    # msg = socket_PC.subscriber_env()
+    # state = msg["imu_data"]
 
